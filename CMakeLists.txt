@@ -26,5 +26,5 @@ target_link_libraries(tests PRIVATE dynamic_memory PkgConfig::Criterion)
 add_test(NAME tests COMMAND tests)
 
 add_executable(benchmarks benchmarks/benchmarks.c)
-target_link_libraries(benchmarks PRIVATE dynamic_memory PkgConfig::Criterion)
+target_link_libraries(benchmarks PRIVATE dynamic_memory)
 
