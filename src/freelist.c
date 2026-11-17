@@ -3,6 +3,8 @@
 
 #define HEADER_SIZE sizeof(CommonHeader)
 
+CommonHeader* free_list_head = NULL;
+
 void free_list_init (void *mem, size_t mem_size) {
     free_list_head  = (CommonHeader*)mem;
     free_list_head->size = mem_size;
@@ -44,10 +46,10 @@ static CommonHeader *split_block(CommonHeader *block, size_t req_size) {
     return remainder;
 }
 
-void *free_list_head_allocate_block(FitResult fit, size_t req_size) {
+void free_list_allocate_block(FitResult fit, size_t req_size) {
     CommonHeader *prev = fit.prev;
     CommonHeader *block = fit.curr;
-    if (!block) return NULL;
+    if (!block) return;
 
     size_t remaining = block->size - req_size;
 
@@ -60,7 +62,6 @@ void *free_list_head_allocate_block(FitResult fit, size_t req_size) {
     }
 
     block->next = NULL;
-    return get_payload_ptr(block);
 }
 
 void free_list_insert_head(CommonHeader *block) {

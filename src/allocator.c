@@ -3,8 +3,6 @@
 #include <sys/mman.h>
 #include <stdio.h>
 
-#define MEMORY_SIZE (10 * 1024 * 1024) // 10MB
-
 static void* get_mmap_region(size_t num_bytes) {
     void *ptr = mmap(
         NULL,

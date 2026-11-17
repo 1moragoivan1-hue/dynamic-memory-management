@@ -2,6 +2,8 @@
 
 #include <stddef.h>
 
+#define MEMORY_SIZE (512) // 10MB
+
 void *smalloc(size_t num_bytes);
 void sfree(void *pointer);
 size_t allocator_free_mem_size(void);

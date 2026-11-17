@@ -4,6 +4,8 @@ project(Dynamic_Memory LANGUAGES C)
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
+include(CTest)
+
 add_library(dynamic_memory STATIC
     src/allocator.c
     src/freelist.c
@@ -12,11 +14,6 @@ add_library(dynamic_memory STATIC
 target_include_directories(dynamic_memory
     PUBLIC include
 )
-
-add_executable(app src/main.c)
-target_link_libraries(app PRIVATE dynamic_memory)
-
-enable_testing()
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(Criterion REQUIRED IMPORTED_TARGET criterion)

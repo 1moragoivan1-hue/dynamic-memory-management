@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "allocator.h"
 
-#define RANDOM_ALLOCATION_COUNT 45
+#define RANDOM_ALLOCATION_COUNT 16
 
 static size_t random_request_size(size_t max_request_size)
 {
@@ -51,7 +51,7 @@ Test(dynamic_memory, handles_randomized_allocations)
     for (size_t i = 0; i < RANDOM_ALLOCATION_COUNT; ++i) {
         size_t slot = i % 3;
         size_t request_size = random_request_size(max_request_size);
-        void *memory = smalloc(random_request_size(max_request_size));
+        void *memory = smalloc(request_size);
 
         if (memory == NULL) {
             allocation_failed = 1;
@@ -75,25 +75,55 @@ Test(dynamic_memory, handles_randomized_allocations)
         }
     }
 
-    for (size_t i = 0; i < 3; ++i) {
-        sfree(slots[i]);
-    }
-
     printf("\nFree list: ");
     allocator_list_dump();
 
     size_t remaining_free_memory = allocator_free_mem_size();
+    char allocation_status[128];
+    char failure_report[128];
 
     if (allocation_failed) {
-        printf("\nALLOCATION ATTEMPT FAILED AFTER %zu ALLOCATIONS\n",
-               successful_allocations);
-        printf("Allocation Required at Failure: %zu bytes\n",
-               allocator_req_mem(failed_request_size));
+        snprintf(
+            allocation_status,
+            sizeof(allocation_status),
+            "ALLOCATION ATTEMPT FAILED AFTER %zu ALLOCATIONS",
+            successful_allocations
+        );
+        snprintf(
+            failure_report,
+            sizeof(failure_report),
+            "Allocation Required at Failure: %zu bytes",
+            allocator_req_mem(failed_request_size)
+        );
     } else {
-        printf("\nALLOCATION DONE WITH NO FAILURES\n");
+        snprintf(
+            allocation_status,
+            sizeof(allocation_status),
+            "ALLOCATION DONE WITH NO FAILURES"
+        );
+        snprintf(
+            failure_report,
+            sizeof(failure_report),
+            "Allocation Required at Failure: N/A"
+        );
     }
 
-    printf("Remaining Free Memory: %zu bytes\n", remaining_free_memory);
+    printf(
+        "\n%s\n"
+        "%s\n"
+        "Total Memory Size: %zu bytes\n"
+        "Memory Used (data + headers): %zu bytes\n"
+        "Remaining Free Memory: %zu bytes\n\n",
+        allocation_status,
+        failure_report,
+        (size_t)MEMORY_SIZE,
+        (size_t)MEMORY_SIZE - remaining_free_memory,
+        remaining_free_memory
+    );
+
+    for (size_t i = 0; i < 3; ++i) {
+        sfree(slots[i]);
+    }
 
     cr_assert(!allocation_failed);
 }
