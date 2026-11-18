@@ -35,7 +35,7 @@ void* smalloc(size_t num_bytes) {
 void sfree(void* p) {
     if (p == NULL) return;
     CommonHeader* block = (CommonHeader*)((char*)p - sizeof(CommonHeader));
-    free_list_insert_head(block);
+    free_list_insert_and_merge(block);
 }
 
 size_t allocator_free_mem_size() {

@@ -22,9 +22,11 @@ typedef struct {
 
 
 FitResult free_list_first_fit(size_t req_size);
+FitResult free_list_best_fit (size_t req_size);
 void free_list_init(void *mem, size_t mem_size);
 void free_list_allocate_block(FitResult block, size_t req_size);
 void free_list_insert_head(CommonHeader *block);
+void free_list_insert_and_merge(CommonHeader *block);
 void free_list_dump(void);
 size_t free_list_total_free_size(void);
-FreeListStats get_free_list_stats(void);
+void get_free_list_stats(FreeListStats *stats);
