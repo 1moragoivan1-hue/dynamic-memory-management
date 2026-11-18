@@ -18,10 +18,11 @@ static void* get_mmap_region(size_t num_bytes) {
 
 
 void* smalloc(size_t num_bytes) {
+    if (num_bytes == 0) return NULL;
     if (free_list_head == NULL) {
-        void* ptr = get_mmap_region(MEMORY_SIZE);
+        void* ptr = get_mmap_region(MEM_SIZE);
         if (ptr == NULL) return NULL; // mmap failed
-        free_list_init(ptr, MEMORY_SIZE);
+        free_list_init(ptr, MEM_SIZE);
     }
 
     FitResult result = free_list_first_fit(num_bytes);
@@ -47,4 +48,8 @@ size_t allocator_req_mem(size_t payload_bytes) {
 
 void allocator_list_dump() {
     free_list_dump();
+}
+
+void allocator_stats(size_t* N, size_t* F, size_t* L) {
+
 }
