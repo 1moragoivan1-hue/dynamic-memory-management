@@ -136,6 +136,7 @@ size_t free_list_total_free_size(void) {
 }
 
 void get_free_list_stats(FreeListStats *stats) {
+    *stats = (FreeListStats){0}; // callers' structs may hold stack garbage
     CommonHeader *block = free_list_head;
 
     while (block) {
