@@ -116,8 +116,8 @@ Test(dynamic_memory, handles_randomized_allocations)
         "Remaining Free Memory: %zu bytes\n\n",
         allocation_status,
         failure_report,
-        (size_t)MEMORY_SIZE,
-        (size_t)MEMORY_SIZE - remaining_free_memory,
+        (size_t)MEM_SIZE,
+        (size_t)MEM_SIZE - remaining_free_memory,
         remaining_free_memory
     );
 

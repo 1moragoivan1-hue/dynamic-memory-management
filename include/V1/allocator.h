@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-#define MEMORY_SIZE (512) // 10MB
+#define MEM_SIZE (10 * 1024 * 1024) // 10MB
 
 void *smalloc(size_t num_bytes);
 void sfree(void *pointer);
