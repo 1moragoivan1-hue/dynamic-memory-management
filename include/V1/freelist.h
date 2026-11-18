@@ -19,8 +19,6 @@ typedef struct {
     size_t largest_block;
 } FreeListStats;
 
-
-
 FitResult free_list_first_fit(size_t req_size);
 FitResult free_list_best_fit (size_t req_size);
 void free_list_init(void *mem, size_t mem_size);
