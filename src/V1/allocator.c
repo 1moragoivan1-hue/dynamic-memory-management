@@ -49,7 +49,3 @@ size_t allocator_req_mem(size_t payload_bytes) {
 void allocator_list_dump() {
     free_list_dump();
 }
-
-void allocator_stats(size_t* N, size_t* F, size_t* L) {
-
-}
