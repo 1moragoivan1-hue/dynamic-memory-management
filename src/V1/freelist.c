@@ -91,3 +91,21 @@ size_t free_list_total_free_size(void) {
     }
     return total;
 }
+
+FreeListStats get_free_list_stats(void) {
+    CommonHeader *block = free_list_head;
+    FreeListStats stats = {0};
+
+    while (block) {
+        if (block->size > stats.largest_block) {
+            stats.largest_block = block->size;
+        }
+        stats.block_count++;
+        stats.free_memory += block->size;
+
+        block = block->next;
+    }
+
+    return stats;
+
+}
