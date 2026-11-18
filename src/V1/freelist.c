@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "freelist.h"
 
 #define HEADER_SIZE sizeof(CommonHeader)
@@ -20,6 +21,21 @@ FitResult free_list_first_fit (size_t req_size) {
         curr = curr->next;        
     }
     return (FitResult){NULL, NULL};
+}
+FitResult free_list_best_fit (size_t req_size) {
+    CommonHeader *curr = free_list_head;
+    CommonHeader *prev = NULL;
+    FitResult best = {NULL, NULL};
+    while (curr) {
+        if ((curr->size >= req_size) &&
+        (best.curr == NULL || curr->size < best.curr->size)){
+            best.curr = curr;
+            best.prev = prev;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+    return best;
 }
 
 static void *get_payload_ptr(CommonHeader *block) {
@@ -68,6 +84,33 @@ void free_list_insert_head(CommonHeader *block) {
     if (!block) return;
     block->next = free_list_head;
     free_list_head = block;
+}
+
+static int blocks_touch(const CommonHeader *left, const CommonHeader *right) {
+    return (uintptr_t)right - (uintptr_t)left == HEADER_SIZE + left->size;
+}
+
+static void merge_with_next(CommonHeader *block) {
+    CommonHeader *next = block->next;
+    block->size += HEADER_SIZE + next->size;
+    block->next = next->next;
+}
+
+void free_list_insert_and_merge(CommonHeader *block) {
+    CommonHeader *prev = NULL;
+    CommonHeader *curr = free_list_head;
+
+    while (curr && ((uintptr_t)curr < (uintptr_t)block)) {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    block->next = curr;
+    replace_node(prev, block);
+
+    if (curr && blocks_touch(block, curr)) merge_with_next(block);
+    if (prev && blocks_touch(prev, block)) merge_with_next(prev);
+
 }
 
 void free_list_dump(void) {
