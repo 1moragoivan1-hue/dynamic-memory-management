@@ -8,6 +8,10 @@
 #define ALIGNMENT alignof(max_align_t)
 #define ALIGN_UP(n) (((n) + (ALIGNMENT - 1)) & ~(size_t)(ALIGNMENT - 1))
 
+#define FIT_TYPE (FIT_FIRST)
+#define SHOULD_MERGE (false)
+
+
 static void* get_mmap_region(size_t num_bytes) {
     void *ptr = mmap(
         NULL,
@@ -33,7 +37,7 @@ void* smalloc(size_t num_bytes) {
         free_list_init(ptr, MEM_SIZE);
     }
 
-    FitResult result = free_list_first_fit(req_size);
+    FitResult result = free_list_fit(req_size, FIT_TYPE);
     if (result.curr == NULL) return NULL; // Free list empty
 
     free_list_allocate_block(result, req_size);
@@ -43,7 +47,7 @@ void* smalloc(size_t num_bytes) {
 void sfree(void* p) {
     if (p == NULL) return;
     CommonHeader* block = (CommonHeader*)((char*)p - sizeof(CommonHeader));
-    free_list_insert_and_merge(block);
+    free_list_insert(block, SHOULD_MERGE);
 }
 
 size_t allocator_free_mem_size() {

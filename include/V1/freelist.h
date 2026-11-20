@@ -1,4 +1,5 @@
 #pragma once
+#include "allocator.h"
 #include <stddef.h>
 
 typedef struct common_header {
@@ -7,6 +8,11 @@ typedef struct common_header {
 } CommonHeader;
 
 extern CommonHeader* free_list_head;
+
+typedef enum {
+    FIT_FIRST,
+    FIT_BEST
+} FitType;
 
 typedef struct {
     CommonHeader *prev;
@@ -19,14 +25,13 @@ typedef struct {
     size_t largest_block;
 } FreeListStats;
 
+FitResult free_list_fit(size_t req_size, FitType type);
 
-
-FitResult free_list_first_fit(size_t req_size);
-FitResult free_list_best_fit (size_t req_size);
 void free_list_init(void *mem, size_t mem_size);
 void free_list_allocate_block(FitResult block, size_t req_size);
-void free_list_insert_head(CommonHeader *block);
-void free_list_insert_and_merge(CommonHeader *block);
+
+void free_list_insert(CommonHeader *block, bool should_merge);
+
 void free_list_dump(void);
 size_t free_list_total_free_size(void);
 void get_free_list_stats(FreeListStats *stats);
