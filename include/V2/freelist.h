@@ -6,6 +6,9 @@ typedef struct common_header {
     struct common_header *next;
 } CommonHeader;
 
+#define BLOCK_ALIGNMENT _Alignof(max_align_t)
+#define HEADER_SIZE (((sizeof(CommonHeader) + BLOCK_ALIGNMENT - 1) / BLOCK_ALIGNMENT) * BLOCK_ALIGNMENT)
+
 typedef struct {
     CommonHeader *prev;
     CommonHeader *curr;

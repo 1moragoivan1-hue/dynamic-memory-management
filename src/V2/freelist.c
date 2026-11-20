@@ -2,8 +2,6 @@
 #include <stdint.h>
 #include "freelist.h"
 
-#define HEADER_SIZE sizeof(CommonHeader)
-
 void free_list_init (CommonHeader **head, void *mem, size_t mem_size) {
     *head = mem;
     (*head)->size = mem_size - HEADER_SIZE;
