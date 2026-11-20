@@ -6,13 +6,13 @@
 
 CommonHeader* free_list_head = NULL;
 
-void free_list_init (void *mem, size_t mem_size) {
+void free_list_init(void *mem, size_t mem_size) {
     free_list_head  = (CommonHeader*)mem;
     free_list_head->size = mem_size - HEADER_SIZE;
     free_list_head->next = NULL;
 }
 
-FitResult free_list_first_fit (size_t req_size) {
+static FitResult free_list_first_fit(size_t req_size) {
     CommonHeader *curr = free_list_head;
     CommonHeader *prev = NULL;
     while (curr) {
@@ -22,7 +22,8 @@ FitResult free_list_first_fit (size_t req_size) {
     }
     return (FitResult){NULL, NULL};
 }
-FitResult free_list_best_fit (size_t req_size) {
+
+static FitResult free_list_best_fit(size_t req_size) {
     CommonHeader *curr = free_list_head;
     CommonHeader *prev = NULL;
     FitResult best = {NULL, NULL};
@@ -36,6 +37,14 @@ FitResult free_list_best_fit (size_t req_size) {
         curr = curr->next;
     }
     return best;
+}
+
+FitResult free_list_fit(size_t req_size, FitType type) {
+    switch (type) {
+        case FIT_FIRST: return free_list_first_fit(req_size);
+        case FIT_BEST: return free_list_best_fit(req_size);
+        default: return free_list_first_fit(req_size);
+    }
 }
 
 static void *get_payload_ptr(CommonHeader *block) {
@@ -80,7 +89,7 @@ void free_list_allocate_block(FitResult fit, size_t req_size) {
     block->next = NULL;
 }
 
-void free_list_insert_head(CommonHeader *block) {
+static void free_list_insert_head(CommonHeader *block) {
     if (!block) return;
     block->next = free_list_head;
     free_list_head = block;
@@ -96,7 +105,7 @@ static void merge_with_next(CommonHeader *block) {
     block->next = next->next;
 }
 
-void free_list_insert_and_merge(CommonHeader *block) {
+static void free_list_insert_and_merge(CommonHeader *block) {
     CommonHeader *prev = NULL;
     CommonHeader *curr = free_list_head;
 
@@ -110,7 +119,10 @@ void free_list_insert_and_merge(CommonHeader *block) {
 
     if (curr && blocks_touch(block, curr)) merge_with_next(block);
     if (prev && blocks_touch(prev, block)) merge_with_next(prev);
+}
 
+void free_list_insert(CommonHeader *block, bool should_merge) {
+    should_merge ? free_list_insert_and_merge(block) : free_list_insert_head(block);
 }
 
 void free_list_dump(void) {

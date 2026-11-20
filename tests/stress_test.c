@@ -31,7 +31,7 @@
 static inline size_t rand_size() { return (size_t)(rand() % MAX_REQ_SIZE) + 1; }
 
 int main(void) {
-    srand(time(0)); // seed the rng
+    srand(12345); // seed for reproducibility
   
     size_t success = 0;                          // # successful allocations so far
     size_t before_first_failure = N_REQUESTS;    // stays N_REQUESTS if no failure occurs
